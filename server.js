@@ -5,6 +5,9 @@ const queryString = require('query-string');
 
 const app = express();
 
+
+const { PORT } = require('./config');
+
 // For this challenge, we're hard coding a list of users, because
 // we haven't learned about databases yet. Normally, you'd store
 // user data in a database, and query the database to find
@@ -64,9 +67,26 @@ const USERS = [
 //  4. if matching user found, add the user object to the request object
 //     (aka, `req.user = matchedUser`)
 function gateKeeper(req, res, next) {
+  
   // your code should replace the line below
-  next();
+
+    //let target = req.get('x-username-and-password');
+    
+    const {user, pass} = Object.assign(
+      {user: null, pass: null},
+
+    
+    //let parsedTarget = queryString.parse(target);
+    
+    queryString.parse(req.get('x-username-and-password')));
+    console.log(user, pass);
+    req.user = USERS.find(usr => usr.userName ===user && usr.password ===pass);
+
+    //parsedTarget.find(item => item.user =  )
+    next();
+  //res.json({user});
 }
+app.use(gateKeeper);
 
 // Add the middleware to your app!
 
@@ -85,6 +105,6 @@ app.get("/api/users/me", (req, res) => {
   return res.json({firstName, lastName, id, userName, position});
 });
 
-app.listen(process.env.PORT, () => {
-  console.log(`Your app is listening on port ${process.env.PORT}`);
+app.listen(PORT, () => {
+  console.log(`Your app is listening on port ${PORT}`);
 });
